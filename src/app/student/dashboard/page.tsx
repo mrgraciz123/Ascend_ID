@@ -12,7 +12,7 @@ import { OpportunityService } from "@/services/opportunity";
 import { AchievementService } from "@/services/achievement";
 import { TrustScoreService } from "@/services/trust-score";
 import { DigiLockerConnect } from "@/components/DigiLockerConnect";
-import Image from "next/image";
+
 import { useCallback } from "react";
 
 export default function StudentDashboard() {
@@ -177,7 +177,12 @@ export default function StudentDashboard() {
  <div key={opp.id as string} className="flex items-center justify-between p-3 rounded-lg border border-border/30 hover: transition-colors group cursor-pointer">
  <div className="flex items-center gap-3">
  <div className="w-10 h-10 rounded-md bg-white flex items-center justify-center p-1 shrink-0 overflow-hidden relative">
- <Image src={opp.logo} alt={opp.company} fill sizes="40px" className="object-contain" />
+  <img
+  src={opp.logo || "/default-company.png"}
+  alt={opp.company || "Company"}
+  className="object-contain w-full h-full"
+  onError={(e) => { e.currentTarget.src = "/default-company.png"; }}
+  />
  </div>
  <div>
  <p className="font-medium text-white group-hover:text-primary transition-colors">{opp.title}</p>

@@ -46,53 +46,85 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  --color-success: var(--success);
+  --color-trust: var(--trust);
+
+  --animate-float: float 8s ease-in-out infinite;
+  --animate-float-delayed: float 8s ease-in-out infinite 2s;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(-1deg); }
+    50% { transform: translateY(-20px) rotate(1deg); }
+  }
 }
 
 :root {
-  /* Institutional Indian Fintech Theme */
+  /* Institutional High-Trust Theme */
   --background: #0B1020; 
   --foreground: #F8FAFC; 
-  --card: #111827; /* Surface */
+  --card: #0F1629;
   --card-foreground: #F8FAFC;
-  --popover: #111827;
+  --popover: #0B1020;
   --popover-foreground: #F8FAFC;
-  --primary: #4F46E5; /* Intelligence */
-  --primary-foreground: #FFFFFF;
-  --secondary: #06B6D4; /* Connectivity */
+  --primary: #FFFFFF; 
+  --primary-foreground: #000000;
+  --secondary: #1E293B; 
   --secondary-foreground: #FFFFFF;
-  --muted: #1F2937; 
-  --muted-foreground: #9CA3AF; 
-  --accent: #1F2937;
-  --accent-foreground: #F8FAFC;
+  --muted: #1E293B; 
+  --muted-foreground: #94A3B8; 
+  --accent: #1E293B;
+  --accent-foreground: #FFFFFF;
   --destructive: #EF4444; 
-  --border: #374151; /* Strict border */
-  --input: #374151;
-  --ring: #4F46E5;
+  --border: #1E293B;
+  --input: #1E293B;
+  --ring: #FFFFFF;
   
-  --success: #22C55E; /* Opportunity */
-  --trust: #F59E0B; /* Trust */
+  --success: #10B981;
+  --trust: #F59E0B;
 
-  --radius: 0.5rem; /* Sharper radius for strict look */
+  --radius: 0.3rem; /* Very strict, sharp corners */
 }
 
 .dark {
-  --background: #0B1020;
-  --foreground: #F8FAFC;
-  --card: #111827;
+  --background: #0B1020; 
+  --foreground: #F8FAFC; 
+  --card: #0F1629;
   --card-foreground: #F8FAFC;
-  --popover: #111827;
+  --popover: #0B1020;
   --popover-foreground: #F8FAFC;
-  --primary: #4F46E5;
-  --primary-foreground: #FFFFFF;
-  --secondary: #06B6D4;
+  --primary: #FFFFFF; 
+  --primary-foreground: #000000;
+  --secondary: #1E293B; 
   --secondary-foreground: #FFFFFF;
-  --muted: #1F2937;
-  --muted-foreground: #9CA3AF;
-  --accent: #1F2937;
-  --accent-foreground: #F8FAFC;
-  --destructive: #EF4444;
-  --border: #374151;
-  --input: #374151;
+  --muted: #1E293B; 
+  --muted-foreground: #94A3B8; 
+  --accent: #1E293B;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444; 
+  --border: #1E293B;
+  --input: #1E293B;
+  --ring: #FFFFFF;
+}
+
+.dark {
+  --background: #020617; 
+  --foreground: #F8FAFC; 
+  --card: rgba(255,255,255,0.02);
+  --card-foreground: #F8FAFC;
+  --popover: #020617;
+  --popover-foreground: #F8FAFC;
+  --primary: #4F46E5; 
+  --primary-foreground: #FFFFFF;
+  --secondary: #06B6D4; 
+  --secondary-foreground: #FFFFFF;
+  --muted: rgba(255,255,255,0.05); 
+  --muted-foreground: #94A3B8; 
+  --accent: rgba(255,255,255,0.08);
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444; 
+  --border: rgba(255,255,255,0.08);
+  --input: rgba(255,255,255,0.08);
   --ring: #4F46E5;
 }
 
@@ -113,7 +145,11 @@
   }
 }
 
-/* Custom utility for strict fintech surface */
+/* Custom utility for institutional surfaces */
 .surface-panel {
-  @apply bg-[#111827] border border-[#374151] shadow-none rounded-lg;
+  @apply bg-card border border-border rounded-sm shadow-none;
+}
+
+.document-stamp {
+  @apply border-2 border-dashed border-success/30 bg-success/5 text-success px-4 py-2 uppercase tracking-widest font-mono text-xs font-bold inline-block transform -rotate-2;
 }

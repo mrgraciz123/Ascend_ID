@@ -1,33 +1,63 @@
 import { db } from "@/lib/firebase";
-import { doc, getDoc, collection, query, where, getDocs, setDoc } from "firebase/firestore";
+import { doc, getDoc, collection, query, where, getDocs, setDoc, serverTimestamp } from "firebase/firestore";
 
 export class StudentService {
- static async getProfile(studentId: string) {
- try {
- const docRef = doc(db, "students", studentId);
- const docSnap = await getDoc(docRef);
- 
- if (docSnap.exists()) {
- const data = docSnap.data();
- return {
- id: data.uid,
- name: data.fullName || "Student",
- university: data.institution || "Pending Setup",
- major: data.degree || "Pending Setup",
- graduationYear: data.graduationYear || new Date().getFullYear().toString(),
- avatar: `https://i.pravatar.cc/150?u=${data.uid}`,
- trustScore: 0, // Calculated dynamically elsewhere
- skills: data.skills || [],
- isDigiLockerConnected: data.isDigiLockerConnected || false,
- profileCompletion: data.profileCompletion || 20,
- };
- }
- return null;
- } catch (error) {
- console.error("Error fetching student profile:", error);
- return null;
- }
- }
+
+  // Single source of truth for all candidate data normalization.
+  // All recruiter and student views must use this to avoid Firestore field mismatch crashes.
+  static normalizeCandidate(data: any, fallbackId = "") {
+    return {
+      id: data?.uid || data?.id || fallbackId,
+      name: data?.fullName || data?.displayName || data?.name || "Anonymous Student",
+      avatar: data?.photoURL || data?.avatar || "/default-avatar.png",
+      institution: data?.institution || data?.university || "Unknown Institution",
+      university: data?.institution || data?.university || "Unknown Institution",
+      degree: data?.degree || data?.major || "Not Provided",
+      major: data?.degree || data?.major || "Not Provided",
+      graduationYear: data?.graduationYear || new Date().getFullYear().toString(),
+      trustScore: data?.trustScore || 0,
+      skills: Array.isArray(data?.skills) ? data.skills : [],
+      achievements: Array.isArray(data?.achievements) ? data.achievements : [],
+      academicRecords: Array.isArray(data?.academicRecords) ? data.academicRecords : [],
+      isDigiLockerConnected: data?.isDigiLockerConnected || false,
+      profileCompletion: data?.profileCompletion || 20,
+      location: data?.location || "Remote",
+      interests: Array.isArray(data?.interests) ? data.interests : ["Full-Stack Development"],
+      projects: Array.isArray(data?.projects) ? data.projects : []
+    };
+  }
+
+  static async updateProfilerData(studentId: string, data: { location: string; interests: string[]; projects: any[] }) {
+    try {
+      const docRef = doc(db, "students", studentId);
+      await setDoc(docRef, {
+        location: data.location,
+        interests: data.interests,
+        projects: data.projects,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+      return { success: true };
+    } catch (error) {
+      console.error("Error in updateProfilerData:", error);
+      return { success: false, error };
+    }
+  }
+
+  static async getProfile(studentId: string) {
+    try {
+      const docRef = doc(db, "students", studentId);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        return StudentService.normalizeCandidate({ ...docSnap.data() }, studentId);
+      }
+      // No document found — return fully safe defaults
+      console.warn(`StudentService: No profile found for id="${studentId}". Returning defaults.`);
+      return StudentService.normalizeCandidate({}, studentId);
+    } catch (error) {
+      console.error("StudentService.getProfile error:", error);
+      return StudentService.normalizeCandidate({}, studentId);
+    }
+  }
 
  static async getAcademicRecords(studentId: string) {
  try {

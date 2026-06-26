@@ -7,10 +7,25 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
 import { Settings as SettingsIcon, Bell, Shield, Key } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function RecruiterSettings() {
  const { currentUser, logout } = useAuth();
  const [loading, setLoading] = useState(false);
+ const router = useRouter();
+
+ const handleSignOut = async () => {
+   try {
+     setLoading(true);
+     await logout();
+     router.push("/auth/login");
+   } catch (error) {
+     console.error("Sign out failed:", error);
+     alert("Failed to sign out. Please try again.");
+   } finally {
+     setLoading(false);
+   }
+ };
 
  return (
  <div className="space-y-8 animate-in fade-in duration-500 max-w-4xl mx-auto">
@@ -79,7 +94,8 @@ export default function RecruiterSettings() {
  <CardContent>
  <Button 
  variant="destructive" 
- onClick={() => logout()}
+ disabled={loading}
+ onClick={handleSignOut}
  className="bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20"
  >
  Sign Out

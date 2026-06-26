@@ -48,7 +48,7 @@ export default function CandidateProfile({ params }: { params: Promise<{ id: str
  );
  }
 
- const verifiedAchievements = achievements.filter(a => a.verified);
+ const verifiedAchievements = (achievements || []).filter((a: any) => a?.verified);
 
  return (
  <div className="space-y-8 animate-in fade-in duration-500 max-w-5xl mx-auto">
@@ -85,7 +85,7 @@ export default function CandidateProfile({ params }: { params: Promise<{ id: str
  <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
  <Avatar className="w-32 h-32 border-4 border-background shadow-xl">
  <AvatarImage src={student.avatar} alt={student.name} />
- <AvatarFallback className="text-4xl bg-secondary">{student.name.substring(0, 2)}</AvatarFallback>
+ <AvatarFallback className="text-4xl bg-secondary">{(student?.name || student?.fullName || student?.displayName || "ST").substring(0, 2).toUpperCase()}</AvatarFallback>
  </Avatar>
  
  <div className="flex-1 space-y-4">
@@ -116,7 +116,7 @@ export default function CandidateProfile({ params }: { params: Promise<{ id: str
  </div>
 
  <div className="flex flex-wrap gap-2 pt-2">
- {student.skills.map((skill: string) => (
+ {(student.skills || []).map((skill: string) => (
  <Badge key={skill} variant="secondary" className="bg-white/5 hover:bg-white/10 text-white border-white/10">
  {skill}
  </Badge>
@@ -147,17 +147,24 @@ export default function CandidateProfile({ params }: { params: Promise<{ id: str
  </CardContent>
  </Card>
 
- <Card className="surface-panel border-amber-500/30 bg-amber-500/5">
- <CardHeader className="pb-2">
- <CardTitle className="text-lg text-amber-500 flex items-center gap-2">
- <ShieldCheck className="w-5 h-5" />
- Risk Indicators: None Detected
- </CardTitle>
- </CardHeader>
- <CardContent>
- <p className="text-sm text-muted-foreground">No overlapping timelines. No suspicious credential hashes. Candidate's potential score is purely derived from verified, source-backed documents.</p>
- </CardContent>
- </Card>
+  <Card className="surface-panel border-amber-500/30 bg-amber-500/5">
+  <CardHeader className="pb-2">
+  <CardTitle className="text-lg text-amber-500 flex items-center gap-2">
+  <ShieldCheck className="w-5 h-5" />
+  Risk Indicators: Check Logs
+  </CardTitle>
+  </CardHeader>
+  <CardContent className="space-y-4">
+  <p className="text-sm text-muted-foreground">Run layout tampering analyses, verify signature registers, check duplicate timelines, and audit expired W3C credentials.</p>
+  <div className="pt-2 border-t border-amber-500/10">
+  <Link href={`/recruiter/candidate/${student.id}/fraud`}>
+  <Button className="w-full bg-amber-500 hover:bg-amber-600 text-black text-xs font-semibold h-9">
+  Run AI Fraud Analysis <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
+  </Button>
+  </Link>
+  </div>
+  </CardContent>
+  </Card>
  </div>
 
  <div className="space-y-4">
@@ -169,7 +176,7 @@ export default function CandidateProfile({ params }: { params: Promise<{ id: str
  Fetched directly from government databases (DigiLocker). 100% authentic.
  </p>
  <div className="grid gap-4 md:grid-cols-2">
- {records.map(record => (
+ {(records || []).map((record: any) => (
  <Card key={record.id} className="surface-panel hover: transition-colors">
  <CardContent className="p-6">
  <div className="flex justify-between items-start">
@@ -196,7 +203,7 @@ export default function CandidateProfile({ params }: { params: Promise<{ id: str
  All records below have been cryptographically verified directly with the issuing institution.
  </p>
 
- {verifiedAchievements.map(ach => (
+ {(verifiedAchievements || []).map((ach: any) => (
  <Card key={ach.id} className="surface-panel hover: transition-colors">
  <CardContent className="p-6">
  <div className="flex flex-col md:flex-row justify-between gap-4">

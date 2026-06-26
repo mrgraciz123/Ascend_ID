@@ -5,10 +5,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 import { Settings as SettingsIcon, Bell, Shield, Key } from "lucide-react";
 
 export default function StudentSettings() {
  const { currentUser, logout } = useAuth();
+ const router = useRouter();
+
+ const handleSignOut = async () => {
+   try {
+     await logout();
+     router.push("/auth/login");
+   } catch (error) {
+     console.error("Sign out failed:", error);
+     alert("Failed to sign out. Please try again.");
+   }
+ };
 
  return (
  <div className="space-y-8 animate-in fade-in duration-500 max-w-4xl mx-auto">
@@ -77,7 +89,7 @@ export default function StudentSettings() {
  <CardContent>
  <Button 
  variant="destructive" 
- onClick={() => logout()}
+ onClick={handleSignOut}
  className="bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20"
  >
  Sign Out

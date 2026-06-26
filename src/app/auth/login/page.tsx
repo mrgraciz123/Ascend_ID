@@ -9,29 +9,54 @@ import { ShieldCheck, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function LoginPage() {
- const [isLoading, setIsLoading] = useState(false);
- const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
- const { login, loginWithGoogle } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
 
- const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
- e.preventDefault();
- setIsLoading(true);
- 
- const formData = new FormData(e.currentTarget);
- const email = formData.get("email") as string;
- const password = formData.get("password") as string;
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
 
- try {
- await login(email, password);
- router.push("/student/dashboard");
- } catch (error) {
- console.error("Login failed", error);
- setIsLoading(false);
- }
- };
+    try {
+      await login(email, password);
+      
+      // Wait for auth state to reflect and check Firestore user role
+      const { auth } = await import("@/lib/firebase");
+      // Add a small delay if auth.currentUser is not yet populated
+      let uid = auth.currentUser?.uid;
+      if (!uid) {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        uid = auth.currentUser?.uid;
+      }
+      
+      if (uid) {
+        const userDoc = await getDoc(doc(db, "users", uid));
+        if (userDoc.exists()) {
+          const role = userDoc.data().role;
+          if (role === "issuer") {
+            router.push("/issuer/dashboard");
+            return;
+          } else if (role === "recruiter") {
+            router.push("/recruiter/dashboard");
+            return;
+          }
+        }
+      }
+      router.push("/student/dashboard");
+    } catch (error) {
+      console.error("Login failed", error);
+      setIsLoading(false);
+    }
+  };
 
  return (
  <div className="min-h-screen flex items-center justify-center p-4 bg-background relative overflow-hidden">

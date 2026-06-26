@@ -1,6 +1,6 @@
 "use client";
 
-import { ShieldCheck, Search, Users, Bookmark, Settings, LogOut, Menu } from "lucide-react";
+import { ShieldCheck, Search, Users, Bookmark, Settings, LogOut, Menu, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -9,6 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 
 const navItems = [
  { name: "Talent Search", href: "/recruiter/dashboard", icon: Search },
+ { name: "AI Fraud Audit", href: "/recruiter/fraud", icon: ShieldAlert },
  { name: "Shortlist", href: "/recruiter/shortlist", icon: Bookmark },
  { name: "My Organization", href: "/recruiter/organization", icon: Users },
 ];
