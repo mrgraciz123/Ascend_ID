@@ -1,48 +1,159 @@
-# AscendID — The Cryptographic Trust Layer for Talent
+<p align="center">
+  <img src="./public/assets/logo.png" width="140" alt="AscendID Logo" />
+</p>
 
-AscendID is an end-to-end decentralized talent identity protocol that cryptographically anchors W3C Verifiable Credentials to the Base Sepolia blockchain ledger, dynamically calculates candidate **Trust Engine Scores** (300-850), and uses Google Gemini AI to audit records for credentials forgery.
+<h1 align="center">AscendID</h1>
 
-Developed as a highly polished, dark-futuristic Next.js application, it is optimized for high-fidelity hackathon demonstrations and production-grade deployments.
+<h3 align="center">
+Verified Potential • Trusted Opportunities
+</h3>
+
+<p align="center">
+Building India's Talent Verification Infrastructure
+</p>
+
+<p align="center">
+
+<img src="https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=nextdotjs" />
+
+<img src="https://img.shields.io/badge/React-19-149eca?style=for-the-badge&logo=react" />
+
+<img src="https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript" />
+
+<img src="https://img.shields.io/badge/Firebase-Backend-orange?style=for-the-badge&logo=firebase" />
+
+<img src="https://img.shields.io/badge/Cloudinary-Media-blue?style=for-the-badge&logo=cloudinary" />
+
+<img src="https://img.shields.io/badge/Vercel-Deployed-black?style=for-the-badge&logo=vercel" />
+
+<img src="https://img.shields.io/badge/Hackathon-Project-success?style=for-the-badge" />
+
+</p>
 
 ---
 
-## 🏗️ System Architecture
+<p align="center">
+  <img src="./public/assets/Banner.png" width="100%" alt="AscendID Banner" />
+</p>
+
+---
+
+## 🌍 The Vision
+
+> UPI unified payments.
+>
+> DigiLocker unified documents.
+>
+> **AscendID unifies talent.**
+
+AscendID is a next-generation verification infrastructure platform that combines academic identity, achievements, credentials, and opportunities into a unified digital passport.
+
+Instead of repeatedly uploading documents and filling profiles across multiple portals, students create a single trusted identity layer.
+
+Recruiters gain access to verified talent profiles, reducing hiring friction and improving trust.
+
+---
+
+## ⚡ Why AscendID?
+
+<table>
+<tr>
+<td width="33%">
+
+### 🎓 Students
+
+* One Identity
+* One Profile
+* One Verification Layer
+* Better Discoverability
+* Reduced Application Fatigue
+
+</td>
+
+<td width="33%">
+
+### 🏢 Recruiters
+
+* Verified Candidates
+* Reduced BGV Costs
+* Faster Hiring
+* Better Signal Quality
+* Structured Profiles
+
+</td>
+
+<td width="33%">
+
+### 🏛️ Institutions
+
+* Trusted Credentials
+* Centralized Records
+* Verification Layer
+* Better Transparency
+* Digital Infrastructure
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🏗️ Platform Architecture
 
 ```mermaid
-sequenceDiagram
-    participant Issuer as Issuer Portal (University/Company)
-    participant API as Secure Next.js Server
-    participant Ledger as Base Sepolia Smart Contract
-    participant DB as Firestore Database
-    participant Recruiter as Recruiter Dashboard / ATS
+flowchart TD
 
-    Issuer->>API: Anchor Credential (JSON-LD metadata, wallet signature)
-    Note over API: 1. Generate SHA-256 metadata hash<br/>2. Sign with server authority key<br/>3. Construct W3C standard proof
-    API->>Ledger: anchorCredential(uuid, hash, wallet)
-    Ledger-->>API: Confirm Transaction (Block Num, Tx Hash)
-    API->>DB: Save W3C document, transaction receipt, & audit log
-    API-->>Issuer: Return anchored credential UUID
+A[Student]
+--> B[Firebase Authentication]
 
-    Recruiter->>DB: Query Candidate Dossier (Aarav Sharma)
-    Recruiter->>API: Execute AI Fraud Detection Sweep
-    API->>Ledger: getCredential(uuid)
-    Note over API: 1. Recalculate SHA-256 hash<br/>2. Verify ECDSA signature against registry DID<br/>3. Cross-examine blockchain state hashes<br/>4. Gemini audits metadata & PDF layers
-    API-->>Recruiter: Render Risk Report (100% Integrity or Tampered Alert)
+B
+--> C[Digital Passport]
+
+C
+--> D[Firestore Database]
+
+D
+--> E[Verification Engine]
+
+E
+--> F[Opportunity Engine]
+
+F
+--> G[JSearch API]
+
+E
+--> H[Recruiter Dashboard]
+
+D
+--> I[Cloudinary Storage]
 ```
 
 ---
 
-## 🛠️ Technology Stack
+## 🚀 Core Features
 
-- **Framework**: Next.js 16.2 (App Router & Turbopack)
-- **Styling & UI**: Tailwind CSS 4.0, Framer Motion 12.0 (Micro-animations), Lucide Icons
-- **Database & Auth**: Firebase Firestore (Security Rules-hardened), Firebase Auth
-- **Blockchain Layer**: Solidity Smart Contracts, Viem Client (EVM registry integrations)
-- **AI Engine**: Google Gemini API (`gemini-2.5-flash` client REST audits)
-- **Local Mocks**: Isomorphic Local State Blockchain Provider (persists registry client-side to `localStorage` and server-side to `mock_blockchain_state.json` when RPC configs are blank).
+| Feature                | Description                      |
+| ---------------------- | -------------------------------- |
+| 🔐 Authentication      | Google & Email Authentication    |
+| 🎓 Academic Identity   | Academic Records Management      |
+| 🪪 Digital Passport    | Unified Student Identity         |
+| 📂 Proof Vault         | Secure Credential Storage        |
+| 📊 Verification Index  | Verification & Readiness Layer   |
+| 💼 Opportunity Engine  | Real Job & Internship Discovery  |
+| 🏢 Recruiter Dashboard | Candidate Verification Interface |
+| ☁️ Cloudinary Uploads  | Secure Document Upload System    |
 
 ---
 
+## ⚙️ Technology Stack
+
+<p align="center">
+
+<img src="https://skillicons.dev/icons?i=nextjs,react,typescript,firebase,tailwind,vercel,git,github" />
+
+</p>
+
+---
 ## 📁 Repository Structure
 
 ```text
@@ -134,3 +245,66 @@ For presentation pitches and live judging reviews, we have implemented an **Auto
    - Recruiter searches candidate, reviews verification lock, shortlists applicant.
    - Student receives an automated placement offer from Google India!
 4. Presenters can **Pause / Resume** the simulation or adjust step pacing speeds dynamically during the pitch.
+
+
+## 🔄 User Journey
+
+```text
+Google Login
+      │
+      ▼
+Create Profile
+      │
+      ▼
+Import Academic Identity
+      │
+      ▼
+Upload Proofs
+      │
+      ▼
+Generate Verification Index
+      │
+      ▼
+Opportunity Discovery
+      │
+      ▼
+Recruiter Verification
+```
+
+---
+
+## 📸 Product Showcase
+
+### Landing Page
+
+![Landing](public/assets/Landing.png)
+
+### Student Dashboard
+
+![Dashboard](public/assets/Dashboard.png)
+
+### Proof Vault
+
+![Proof Vault](public/assets/ProofVault.png)
+
+### Opportunity Engine
+
+![Opportunities](public/assets/Opportunities.png)
+
+### Recruiter Dashboard
+
+![Recruiter](public/assets/Recruiter.png)
+
+---
+
+## 🏆 Null to One Hackathon 2026
+
+**Team Name:** Tech_Lababdar
+
+**Project:** AscendID
+
+**Tagline:** Verified Potential. Trusted Opportunities.
+
+Building the trust layer for India's next generation of talent.
+
+
