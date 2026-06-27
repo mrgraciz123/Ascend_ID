@@ -42,6 +42,7 @@ export class OpportunityService {
           applyLink: "#",
           salary: "Competitive",
           description: "Build scalable web services using modern frontend frameworks and backend databases.",
+          tags: ["React", "TypeScript", "Node.js"],
           detailsBreakdown: {
             trustScoreMatch: 70,
             skillsMatch: 70,

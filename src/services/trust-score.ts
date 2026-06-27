@@ -100,12 +100,14 @@ export class TrustScoreService {
       }
 
       // 4. Return formatted data maintaining backward compatibility
+      const data = profileSnap.exists() ? profileSnap.data() : null;
       return {
         total,
         explanation,
         factors,
         lastUpdated,
         history: historyList,
+        contributingFactors: apiData?.contributingFactors || data?.trustBreakdown || [],
         breakdown: {
           projects: Math.round((factors.openSourceActivity || 0) * 0.25),
           internships: Math.round((factors.internshipQuality || 0) * 0.25),

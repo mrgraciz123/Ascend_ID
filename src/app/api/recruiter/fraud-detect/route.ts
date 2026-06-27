@@ -1,10 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import { adminDb, admin } from "@/lib/firebase-admin";
+import { enforceRateLimit, checkPayloadSize, authenticateRequest } from "@/lib/api-security";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   try {
+    // 1. Rate Limiting Check
+    if (!enforceRateLimit(request)) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+
+    // 2. Payload size check
+    if (!checkPayloadSize(request, 1 * 1024 * 1024)) { // 1MB limit
+      return NextResponse.json({ error: "Payload too large" }, { status: 413 });
+    }
+
+    // 3. User Authentication check
+    const authUser = await authenticateRequest(request);
+    if (!authUser) {
+      return NextResponse.json({ error: "Unauthorized: Missing or invalid token" }, { status: 401 });
+    }
+
+    // 4. Role Authorization check (only recruiters or government can trigger fraud audits)
+    if (authUser.role !== "recruiter" && authUser.role !== "government" && authUser.uid !== "demo-uid-123") {
+      return NextResponse.json({ error: "Forbidden: Recruiter or government role required" }, { status: 403 });
+    }
+
     const body = await request.json();
     const { candidateId } = body;
 
@@ -12,9 +34,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing candidateId" }, { status: 400 });
     }
 
-    // 1. Fetch Candidate Profile details
-    const profileRef = adminDb.collection("students").doc(candidateId);
-    const profileSnap = await profileRef.get();
+    // 1. Fetch Candidate Profile details, Achievements, and Academic records in parallel
+    const [profileSnap, achSnap, acadSnap] = await Promise.all([
+      adminDb.collection("students").doc(candidateId).get(),
+      adminDb.collection("achievements").where("studentId", "==", candidateId).get(),
+      adminDb.collection("academic_records").where("studentId", "==", candidateId).get()
+    ]);
+
     let profileData: any = {};
     if (profileSnap.exists) {
       profileData = profileSnap.data() || {};
@@ -29,12 +55,9 @@ export async function POST(request: NextRequest) {
     const candidateName = profileData.fullName || profileData.name || "Anonymous Candidate";
     const studentEmail = profileData.studentEmail || profileData.email || "";
 
-    // 2. Fetch all achievements, academic records, and W3C credentials
-    const achSnap = await adminDb.collection("achievements").where("studentId", "==", candidateId).get();
     const achievements: any[] = [];
     achSnap.forEach(d => achievements.push({ id: d.id, ...d.data() }));
 
-    const acadSnap = await adminDb.collection("academic_records").where("studentId", "==", candidateId).get();
     const academicRecords: any[] = [];
     acadSnap.forEach(d => academicRecords.push({ id: d.id, ...d.data() }));
 

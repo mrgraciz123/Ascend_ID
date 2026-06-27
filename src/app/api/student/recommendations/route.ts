@@ -339,6 +339,7 @@ Respond ONLY with a valid JSON array in this exact format (no markdown blocks, n
     "applyLink": "apply-url",
     "salary": "salary-or-stipend",
     "description": "Short details",
+    "tags": ["React", "TypeScript"],
     "detailsBreakdown": {
       "trustScoreMatch": 90,
       "skillsMatch": 80,
@@ -541,6 +542,7 @@ Respond ONLY with a valid JSON array in this exact format (no markdown blocks, n
         applyLink: opp.applyLink,
         salary: opp.salary,
         description: opp.description,
+        tags: opp.requiredSkills || [],
         detailsBreakdown: {
           trustScoreMatch,
           skillsMatch,

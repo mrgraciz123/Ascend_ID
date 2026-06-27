@@ -2,9 +2,32 @@ import { NextRequest, NextResponse } from "next/server";
 import { adminDb, admin } from "@/lib/firebase-admin";
 import { createHash } from "crypto";
 import { getBlockchainProvider } from "@/lib/blockchain";
+import { calculateMetadataHashServer } from "@/lib/normalization";
+import { enforceRateLimit, checkPayloadSize, authenticateRequest } from "@/lib/api-security";
 
 export async function POST(request: NextRequest) {
   try {
+    // 1. Rate Limiting Check
+    if (!enforceRateLimit(request)) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+
+    // 2. Payload size check (5MB limit)
+    if (!checkPayloadSize(request, 5 * 1024 * 1024)) {
+      return NextResponse.json({ error: "Payload too large" }, { status: 413 });
+    }
+
+    // 3. User Authentication check
+    const authUser = await authenticateRequest(request);
+    if (!authUser) {
+      return NextResponse.json({ error: "Unauthorized: Missing or invalid token" }, { status: 401 });
+    }
+
+    // 4. Role Authorization check (only issuers can anchor new credentials)
+    if (authUser.role !== "issuer" && authUser.role !== "government") {
+      return NextResponse.json({ error: "Forbidden: Issuer credentials required to anchor" }, { status: 403 });
+    }
+
     const body = await request.json();
     const {
       issuerId,
@@ -17,7 +40,9 @@ export async function POST(request: NextRequest) {
       credentialType,
       issueDate,
       expiryDate,
-      issuerWallet: rawIssuerWallet
+      issuerWallet: rawIssuerWallet,
+      documentUrl,
+      documentFraudReport
     } = body;
 
     if (!issuerId || !studentEmail || !title || !description) {
@@ -68,10 +93,18 @@ export async function POST(request: NextRequest) {
       }
     };
 
-    // 4. Compute SHA-256 metadata hash of W3C body
-    const credentialString = JSON.stringify(w3cCredential);
-    const dataHash = createHash("sha256").update(credentialString).digest("hex");
-    const formattedHash = `0x${dataHash}`;
+    // 4. Compute SHA-256 metadata hash of normalized fields
+    const normalizationPayload = {
+      studentName,
+      studentEmail: studentEmail.toLowerCase(),
+      issuerId,
+      issuerName,
+      title,
+      credentialType,
+      issueDate,
+      expiryDate: expiryDate || "Never"
+    };
+    const formattedHash = calculateMetadataHashServer(normalizationPayload);
 
     // 5. Generate Server-Side Cryptographic Signature (Viem)
     let digitalSignature = "";
@@ -130,6 +163,10 @@ export async function POST(request: NextRequest) {
       metadataHash: formattedHash,
       digitalSignature,
       qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(`${request.nextUrl.origin}/verify/${uuid}`)}`,
+
+      // Document upload and fraud detection integration
+      documentUrl: documentUrl || "",
+      documentFraudReport: documentFraudReport || null,
 
       blockchain: {
         chainId: provider.chainId,

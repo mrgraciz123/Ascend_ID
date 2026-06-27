@@ -10,8 +10,6 @@ import { useAuth } from "@/context/AuthContext";
 const navItems = [
  { name: "Talent Search", href: "/recruiter/dashboard", icon: Search },
  { name: "AI Fraud Audit", href: "/recruiter/fraud", icon: ShieldAlert },
- { name: "Shortlist", href: "/recruiter/shortlist", icon: Bookmark },
- { name: "My Organization", href: "/recruiter/organization", icon: Users },
 ];
 
 export default function RecruiterLayout({ children }: { children: React.ReactNode }) {

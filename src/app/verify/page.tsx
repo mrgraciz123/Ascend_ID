@@ -36,8 +36,8 @@ export default function QRScannerPortal() {
     setSimulatedScanList([
       { name: "Aarav Sharma (Verified B.Tech)", id: "cred-uuid-valid-1", type: "success" },
       { name: "Rohan Varma (Expired AWS Cloud)", id: "cred-uuid-fraud-21", type: "warning" },
-      { name: "Karan Johar (Revoked React Certificate)", id: "cred-uuid-fraud-1", type: "error" },
-      { name: "Test Student (Mismatched Signature)", id: "cred-uuid-fraud-36", type: "error" }
+      { name: "Karan Malhotra (Revoked React Certificate)", id: "cred-uuid-fraud-1", type: "error" },
+      { name: "Kabir Mehta (Mismatched Signature)", id: "cred-uuid-fraud-36", type: "error" }
     ]);
   }, []);
 

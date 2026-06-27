@@ -174,6 +174,20 @@ export class MockBlockchainProvider implements BlockchainProvider {
   }
 
   async getCredentialHash(uuid: string): Promise<CredentialOnChainRecord> {
+    if (typeof window !== "undefined") {
+      try {
+        const response = await fetch(`/api/blockchain/mock-state?uuid=${encodeURIComponent(uuid)}`);
+        if (response.ok) {
+          const res = await response.json();
+          if (res.success && res.record) {
+            return res.record;
+          }
+        }
+      } catch (e) {
+        console.error("Failed to fetch mock blockchain state from API:", e);
+      }
+    }
+
     const state = this.readState();
     const record = state[uuid];
     if (record) {
@@ -385,13 +399,10 @@ export class BaseSepoliaProvider implements BlockchainProvider {
 // ---------------------------------------------------------
 export function getBlockchainProvider(): BlockchainProvider {
   const contractAddr = process.env.NEXT_PUBLIC_BLOCKCHAIN_CONTRACT_ADDRESS;
-  const privateKey = process.env.BLOCKCHAIN_PRIVATE_KEY;
 
-  if (contractAddr && contractAddr !== "0x0000000000000000000000000000000000000000" && privateKey) {
-    console.log("Blockchain Service: Using Base Sepolia Network.");
+  if (contractAddr && contractAddr !== "0x0000000000000000000000000000000000000000") {
     return new BaseSepoliaProvider();
   } else {
-    console.log("Blockchain Service: Config unavailable. Using MockBlockchainProvider.");
     return new MockBlockchainProvider();
   }
 }

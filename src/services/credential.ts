@@ -108,6 +108,8 @@ export class CredentialService {
     issueDate: string;
     expiryDate: string;
     issuerWallet?: string;
+    documentUrl?: string;
+    documentFraudReport?: any;
   }): Promise<{ success: boolean; id?: string; error?: string }> {
     try {
       const response = await fetch("/api/credentials/anchor", {

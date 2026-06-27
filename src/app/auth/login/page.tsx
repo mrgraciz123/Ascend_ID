@@ -16,7 +16,67 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const { login, loginWithGoogle } = useAuth();
+  const { login, loginWithGoogle, signup } = useAuth();
+
+  const handleDemoLogin = async (role: string) => {
+    setIsLoading(true);
+    let email = "";
+    const password = "password123";
+    let name = "";
+    let issuerType = "";
+    
+    if (role === "student") {
+      email = "student@university.edu";
+      name = "Aarav Sharma";
+    } else if (role === "recruiter") {
+      email = "recruiter@google.com";
+      name = "Google Hiring Lead";
+    } else if (role === "university") {
+      email = "university@iitb.ac.in";
+      name = "IIT Bombay Admin";
+      issuerType = "university";
+    } else if (role === "government") {
+      email = "government@audit.gov";
+      name = "National Audit Official";
+    }
+
+    try {
+      await login(email, password);
+    } catch (err) {
+      try {
+        const signupRole = role === "university" ? "issuer" : role;
+        await signup(email, password, name, signupRole, issuerType);
+        // Post-signup delay to allow database sync
+        await new Promise((resolve) => setTimeout(resolve, 600));
+        await login(email, password);
+      } catch (signupErr) {
+        console.error("Auto-signup for demo role failed:", signupErr);
+      }
+    }
+
+    // Verify auth and redirect based on role
+    setTimeout(async () => {
+      const { auth } = await import("@/lib/firebase");
+      const uid = auth.currentUser?.uid;
+      if (uid) {
+        const userDoc = await getDoc(doc(db, "users", uid));
+        if (userDoc.exists()) {
+          const userRole = userDoc.data().role;
+          if (userRole === "issuer") {
+            router.push("/issuer/dashboard");
+          } else if (userRole === "recruiter") {
+            router.push("/recruiter/dashboard");
+          } else if (userRole === "government") {
+            router.push("/gov/dashboard");
+          } else {
+            router.push("/student/dashboard");
+          }
+          return;
+        }
+      }
+      setIsLoading(false);
+    }, 1000);
+  };
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -29,9 +89,7 @@ export default function LoginPage() {
     try {
       await login(email, password);
       
-      // Wait for auth state to reflect and check Firestore user role
       const { auth } = await import("@/lib/firebase");
-      // Add a small delay if auth.currentUser is not yet populated
       let uid = auth.currentUser?.uid;
       if (!uid) {
         await new Promise((resolve) => setTimeout(resolve, 500));
@@ -47,6 +105,9 @@ export default function LoginPage() {
             return;
           } else if (role === "recruiter") {
             router.push("/recruiter/dashboard");
+            return;
+          } else if (role === "government") {
+            router.push("/gov/dashboard");
             return;
           }
         }
@@ -83,6 +144,58 @@ export default function LoginPage() {
  </CardHeader>
  <form onSubmit={handleLogin}>
  <CardContent className="space-y-4">
+    {/* Quick Demo Login Grid */}
+    <div className="space-y-2 mb-4">
+      <Label className="text-[10px] uppercase font-bold text-indigo-400 tracking-widest block text-center">Quick Demo Login Selector</Label>
+      <div className="grid grid-cols-2 gap-2">
+        <Button 
+          type="button" 
+          variant="outline" 
+          className="bg-indigo-500/5 hover:bg-indigo-500/10 text-white border-white/5 text-[10px] h-9 font-semibold"
+          onClick={() => handleDemoLogin("student")}
+          disabled={isLoading}
+        >
+          🎓 Student
+        </Button>
+        <Button 
+          type="button" 
+          variant="outline" 
+          className="bg-indigo-500/5 hover:bg-indigo-500/10 text-white border-white/5 text-[10px] h-9 font-semibold"
+          onClick={() => handleDemoLogin("recruiter")}
+          disabled={isLoading}
+        >
+          💼 Recruiter
+        </Button>
+        <Button 
+          type="button" 
+          variant="outline" 
+          className="bg-indigo-500/5 hover:bg-indigo-500/10 text-white border-white/5 text-[10px] h-9 font-semibold"
+          onClick={() => handleDemoLogin("university")}
+          disabled={isLoading}
+        >
+          🏫 University (Issuer)
+        </Button>
+        <Button 
+          type="button" 
+          variant="outline" 
+          className="bg-indigo-500/5 hover:bg-indigo-500/10 text-white border-white/5 text-[10px] h-9 font-semibold"
+          onClick={() => handleDemoLogin("government")}
+          disabled={isLoading}
+        >
+          🏛️ Government Portal
+        </Button>
+      </div>
+    </div>
+    
+    <div className="relative w-full py-1">
+      <div className="absolute inset-0 flex items-center">
+        <span className="w-full border-t border-white/5" />
+      </div>
+      <div className="relative flex justify-center text-[10px] uppercase">
+        <span className="bg-[#0B1020] px-2 text-muted-foreground">Or login via credentials</span>
+      </div>
+    </div>
+
  <div className="space-y-2">
  <Label htmlFor="email" className="text-muted-foreground">Email</Label>
  <Input id="email" name="email" type="email" placeholder="student@university.edu" required className="bg-background/50 focus-visible:ring-primary text-white" />

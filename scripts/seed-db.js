@@ -43,7 +43,10 @@ if (process.env.FIRESTORE_EMULATOR_HOST) {
   }
 }
 
-const db = admin.firestore();
+if (!process.env.FIRESTORE_EMULATOR_HOST && !process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+  console.warn('Firebase credentials not provided and no emulator detected. Skipping seeding.');
+  process.exit(0);
+}
 
 // 2. Data Lists
 const UNIVERSITIES = [

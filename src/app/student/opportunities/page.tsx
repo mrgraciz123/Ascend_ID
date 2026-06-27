@@ -67,7 +67,12 @@ export default function OpportunitiesPage() {
         setLocation(profile.location || "Remote");
         setInterests(profile.interests || ["Full-Stack Development"]);
         setProjects(profile.projects || []);
-        setOpportunities(opps);
+        
+        // Guarantee each opportunity has a valid tags array
+        const normalizedOpps = Array.isArray(opps) 
+          ? opps.map((o: any) => ({ ...o, tags: Array.isArray(o.tags) ? o.tags : [] }))
+          : [];
+        setOpportunities(normalizedOpps);
       } catch (e) {
         console.error("Error loading opportunities page details:", e);
       } finally {
@@ -89,7 +94,11 @@ export default function OpportunitiesPage() {
 
       if (saveRes.success) {
         const newMatches = await OpportunityService.generateAIMatches(currentUser.uid);
-        setOpportunities(newMatches);
+        // Guarantee each opportunity has a valid tags array
+        const normalizedMatches = Array.isArray(newMatches)
+          ? newMatches.map((o: any) => ({ ...o, tags: Array.isArray(o.tags) ? o.tags : [] }))
+          : [];
+        setOpportunities(normalizedMatches);
         
         // Refresh local student state
         const freshProfile = await StudentService.getProfile(currentUser.uid);
@@ -480,7 +489,7 @@ export default function OpportunitiesPage() {
                       {/* Displaying salary or stipend */}
                       <div className="flex items-center justify-between">
                         <div className="flex flex-wrap gap-1.5">
-                          {opp.tags.map((tag: string) => (
+                          {(opp.tags || []).map((tag: string) => (
                             <Badge key={tag} className="bg-white/5 hover:bg-white/10 text-white/80 border-white/5 text-[9px] font-mono px-2 py-0.5">
                               {tag}
                             </Badge>

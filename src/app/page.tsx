@@ -73,11 +73,44 @@ export default function Home() {
               Every year, millions of achievements disappear into messy PDFs and unverified resumes. 
               AscendID is the identity layer for talent—a single, cryptographically sealed passport that recruiters trust instantly.
             </p>
-            <Link href="/auth/signup">
-              <Button className="h-14 px-8 bg-white hover:bg-gray-200 text-black font-medium rounded-full transition-transform hover:scale-105 shadow-[0_0_40px_rgba(255,255,255,0.2)]">
-                Establish Your Identity
-              </Button>
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 mb-8">
+              <Link href="/auth/signup">
+                <Button className="h-14 px-8 bg-white hover:bg-gray-200 text-black font-semibold rounded-full transition-transform hover:scale-105 shadow-[0_0_40px_rgba(255,255,255,0.2)]">
+                  Establish Your Identity
+                </Button>
+              </Link>
+              <Link href="/auth/login">
+                <Button className="h-14 px-8 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-full transition-transform hover:scale-105 shadow-[0_0_40px_rgba(99,102,241,0.2)] flex items-center gap-2">
+                  Launch Demo Portals <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
+            </div>
+
+            <div className="space-y-3">
+              <span className="text-[10px] uppercase font-bold text-indigo-400 tracking-widest block">Quick Demo Portal Entry Points</span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 max-w-xl">
+                <Link href="/auth/login" className="w-full">
+                  <Button variant="outline" className="w-full bg-white/5 hover:bg-white/10 border-white/10 text-white text-[11px] h-10 rounded-xl font-medium">
+                    🎓 Student
+                  </Button>
+                </Link>
+                <Link href="/auth/login" className="w-full">
+                  <Button variant="outline" className="w-full bg-white/5 hover:bg-white/10 border-white/10 text-white text-[11px] h-10 rounded-xl font-medium">
+                    💼 Recruiter
+                  </Button>
+                </Link>
+                <Link href="/auth/login" className="w-full">
+                  <Button variant="outline" className="w-full bg-white/5 hover:bg-white/10 border-white/10 text-white text-[11px] h-10 rounded-xl font-medium">
+                    🏫 University
+                  </Button>
+                </Link>
+                <Link href="/auth/login" className="w-full">
+                  <Button variant="outline" className="w-full bg-white/5 hover:bg-white/10 border-white/10 text-white text-[11px] h-10 rounded-xl font-medium">
+                    🏛️ Government
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </motion.div>
 
           {/* THE DIGITAL PASSPORT (APPLE WALLET STYLE) */}
