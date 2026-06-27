@@ -297,7 +297,7 @@ Recruiter Verification
 
 ---
 
-## 🏆 Null to One Hackathon 2026
+## 🏆  Confluence 2.0 · Hackathon
 
 **Team Name:** Tech_Lababdar
 
